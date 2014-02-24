@@ -9,3 +9,9 @@ test:
   encoding: unicode
   database: sample_app
   pool: 5
+
+production:
+  adapter: postgresql
+  encoding: unicode
+  database: sample_app
+  pool: 5
