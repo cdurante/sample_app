@@ -19,7 +19,7 @@ group :development, :test do
   gem 'spork-rails', '4.0.0'
   gem 'guard-spork', '1.5.0'
   gem 'childprocess', '0.4.0'
-
+  gem 'sqlite3'
 end
 
 group :test do
@@ -37,5 +37,4 @@ group :production do
  gem 'rails_log_stdout',           github: 'heroku/rails_log_stdout'
   gem 'rails3_serve_static_assets', github: 'heroku/rails3_serve_static_assets'
   gem 'rails_12factor'
-
 end
