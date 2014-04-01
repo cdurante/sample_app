@@ -1,9 +1,10 @@
 class SessionsController < ApplicationController
+  protect_from_forgery with: :exception
+  include SessionsHelper
+  def new
+  end
 
-def new
-end
-
-def create
+  def create
     user = User.find_by(email: params[:session][:email].downcase)
     if user && user.authenticate(params[:session][:password])
       sign_in user
@@ -14,9 +15,8 @@ def create
     end
   end
 
-def destroy
+  def destroy
     sign_out
     redirect_to root_url
   end
-
 end
