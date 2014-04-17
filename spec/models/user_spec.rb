@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe User do
   before do
-   @user=User.new(name: "Example User", email: "user@example.com",password: "foobar" , password_confirmation: "foobar")
+	 @user=User.new(name: "Example User", email: "user@example.com",password: "foobar" , password_confirmation: "foobar")
   end  
   subject { @user }
 
@@ -14,6 +14,7 @@ describe User do
   it { should respond_to(:remember_token) }
   it { should respond_to(:authenticate) }
   it { should respond_to(:admin) }
+  it { should respond_to(:microposts) }
   it { should be_valid}
   it { should_not be_admin }
 
@@ -26,8 +27,8 @@ describe User do
   end # admin attributes
 
   describe "when name is not present" do
-  before { @user.name = " "}
-  it { should_not be_valid }
+	before { @user.name = " "}
+	it { should_not be_valid }
   end
 
   describe "when name too long" do
@@ -58,9 +59,9 @@ describe User do
 
  describe "when email address is already taken" do
    before do
-  user_with_same_email = @user.dup
-  user_with_same_email.email = @user.email.upcase
-  user_with_same_email.save
+	user_with_same_email = @user.dup
+	user_with_same_email.email = @user.email.upcase
+	user_with_same_email.save
    end
    it { should_not be_valid }
   end
@@ -100,16 +101,49 @@ describe User do
 end
 
   describe "email address with mixed case" do
-  let(:mixed_case_email) { "Foo@ExAMPle.CoM" }
-  it "shold be saved as all lower-case" do
-    @user.email = mixed_case_email
-    @user.save
-    expect(@user.reload.email).to eq mixed_case_email.downcase
+	let(:mixed_case_email) { "Foo@ExAMPle.CoM" }
+	it "shold be saved as all lower-case" do
+	  @user.email = mixed_case_email
+	  @user.save
+	  expect(@user.reload.email).to eq mixed_case_email.downcase
         end
   end
   describe "remember token" do
     before { @user.save }
     its(:remember_token) { should_not be_blank }
   end
+
+  describe "micropost assosiations" do
+    before { @user.save }
+    let!(:older_micropost) do
+	FactoryGirl.create(:micropost, user: @user, created_at: 1.day.ago)
+    end
+    let!(:newer_micropost) do
+        FactoryGirl.create(:micropost, user: @user, created_at: 1.hour.ago) 
+    end
+    it " should have microposts in right order" do
+	expect(@user.microposts.to_a).to eq [newer_micropost, older_micropost ]
+    end
+ 
+    it "should destroy microposts" do
+	microposts = @user.microposts.to_a
+	@user.destroy
+	expect(microposts).not_to be_empty
+	microposts.each do |micropost|
+	  expect(Micropost.where(id: micropost.id)).to be_empty
+    	end
+    end #end should destroy microposts
+
+    describe "status" do
+      let(:unfollowed_post) do
+        FactoryGirl.create(:micropost, user: FactoryGirl.create(:user))
+      end
+
+      its(:feed) { should include(newer_micropost) }
+      its(:feed) { should include(older_micropost) }
+      its(:feed) { should_not include(unfollowed_post) }
+    end # end status
+
+  end # end microposts
 
 end

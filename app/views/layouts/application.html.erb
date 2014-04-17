@@ -11,19 +11,19 @@
   <body>
     <%= render 'layouts/header' %>
     <div class="container">
-  <% flash.each do |key,value| %>
-    <%= content_tag(:div, value, class: "alert alert-#{key}") %>
-  <% end %>     
-  <%= yield %>
-      <%= render 'layouts/footer' %>
-  <% if Rails.env.development? %>
-        <%= debug(params)  %>
-    </br>
-    <p> is local? </p>
-    <%= request.local?() %>
+	<% flash.each do |key,value| %>
+	  <%= content_tag(:div, value, class: "alert alert-#{key}") %>
+	<% end %>     
+	<%= yield %>
+    	<%= render 'layouts/footer' %>
+ 	<% if Rails.env.development? %>
+    	  <%= debug(params)  %>
+	  </br>
+	  <p> is local? </p>
+	  <%= request.local?() %>
           <p> Full URL path </p>
           <%= request.fullpath %>
-  <% end %>
+	<% end %>
     </div>
   </body>
 </html>

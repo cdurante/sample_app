@@ -24,11 +24,11 @@ describe "AuthenticationPages" do
     describe "with invalid information" do
       let(:user) { FactoryGirl.create(:user) }
         before { sign_in user }
-  describe "successful login" do
-    it {should have_successful_login(user) }
-    it {should_not have_link('Sign in', href: signin_path)} 
+	describe "successful login" do
+	  it {should have_successful_login(user) }
+	  it {should_not have_link('Sign in', href: signin_path)} 
 
-  end
+	end
 
       describe "followed by signout" do
         before { click_link "Sign out" }
@@ -57,18 +57,18 @@ describe "AuthenticationPages" do
            it "should render the desired protected page" do
              expect(page).to have_title('Edit user')
            end
+	  
+	   describe "check for friendly redirect upon resign in" do
+	    before do
+	     click_link "Sign out"
+	     sign_in(user)
+	    end
+	
+	    it "should have user's default user home page" do	
+	#      expect(page).to have_title(user.name)
+	    end
 
-     describe "check for friendly redirect upon resign in" do
-      before do
-       click_link "Sign out"
-       sign_in(user)
-      end
-
-      it "should have user's default user home page" do 
-  #      expect(page).to have_title(user.name)
-      end
-
-     end # end friendly redirect
+	   end # end friendly redirect
 
          end # end after signing in
        end # end when attempting to visit a protected page
@@ -90,6 +90,20 @@ describe "AuthenticationPages" do
           it { should have_title('Sign in') }
         end
       end # end Users controller
+
+      describe "in the Microposts controller" do
+
+        describe "submitting to the create action" do
+          before { post microposts_path }
+          specify { expect(response).to redirect_to(signin_path) }
+        end
+
+        describe "submitting to the destroy action" do
+          before { delete micropost_path(FactoryGirl.create(:micropost)) }
+          specify { expect(response).to redirect_to(signin_path) }
+        end
+      end #end in microposts controller
+
 
     end #end for non-signed-in users
 

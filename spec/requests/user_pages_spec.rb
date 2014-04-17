@@ -8,7 +8,7 @@ require 'spec_helper'
 
      let(:user) { FactoryGirl.create(:user) }
      before do
-  sign_in user
+	sign_in user
         visit users_path
      end
 
@@ -64,9 +64,19 @@ require 'spec_helper'
 
   describe "profile page" do
     let(:user) { FactoryGirl.create(:user) }
+    let!(:m1) {FactoryGirl.create(:micropost, user: user, content: "Foo") }
+    let!(:m2) {FactoryGirl.create(:micropost, user: user, content: "Bar") }
+
     before { visit user_path(user) }
     it { should have_page_items(user.name) }
-  end
+
+    describe "microposts" do
+	it { should have_content(m1.content) }
+	it { should have_content(m2.content) }
+	it { should have_content(user.microposts.count) }
+    end
+
+  end # end profile page
 
  describe "signup" do
 
@@ -84,11 +94,11 @@ require 'spec_helper'
       it "should not create a user" do
         expect { click_button submit }.not_to change(User, :count)
       end
-  describe "after submission" do
-    before {click_button submit}
-    it { should have_title('Sign up') }
-    it { should have_content('error') }
-  end
+	describe "after submission" do
+	  before {click_button submit}
+	  it { should have_title('Sign up') }
+	  it { should have_content('error') }
+	end
     end
 
     describe "with valid information" do
